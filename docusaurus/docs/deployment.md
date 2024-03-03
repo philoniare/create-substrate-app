@@ -4,7 +4,7 @@ title: React Deployment
 sidebar_label: React Deployment
 ---
 
-`npm run build` creates a `build` directory with a production build of your app. Set up your favorite HTTP server so that a visitor to your site is served `index.html`, and requests to static paths like `/static/js/main.<hash>.js` are served with the contents of the `/static/js/main.<hash>.js` file. For more information see the [production build](production-build.md) section.
+`npm run build` creates a `build` directory with a production build of your app. Set up your favorite HTTP server so that a visitor to your site is served `index.html`, and requests to static paths like `/static/js/main.<hash>.js` are served with the contents of the `/static/js/main.<hash>.js` file.
 
 ## Static Server
 
@@ -82,21 +82,6 @@ It will get copied to the `build` folder when you run `npm run build`.
 If you’re using [Apache Tomcat](https://tomcat.apache.org/), you need to follow [this Stack Overflow answer](https://stackoverflow.com/a/41249464/4878474).
 
 Now requests to `/todos/42` will be handled correctly both in development and in production.
-
-On a production build, and when you've [opted-in](making-a-progressive-web-app.md#why-opt-in),
-a [service worker](https://developers.google.com/web/fundamentals/primers/service-workers/) will automatically handle all navigation requests, like for
-`/todos/42`, by serving the cached copy of your `index.html`. This
-service worker navigation routing can be configured or disabled by
-[`eject`ing](available-scripts.md#npm-run-eject) and then modifying the
-[`navigateFallback`](https://github.com/GoogleChrome/sw-precache#navigatefallback-string)
-and [`navigateFallbackWhitelist`](https://github.com/GoogleChrome/sw-precache#navigatefallbackwhitelist-arrayregexp)
-options of the `SWPrecachePlugin` configuration.
-
-When users install your app to the homescreen of their device the default configuration will make a shortcut to `/index.html`. This may not work for client-side routers which expect the app to be served from `/`. Edit the web app manifest at `public/manifest.json` and change `start_url` to match the required URL scheme, for example:
-
-```js
-  "start_url": ".",
-```
 
 ## Building for Relative Paths
 

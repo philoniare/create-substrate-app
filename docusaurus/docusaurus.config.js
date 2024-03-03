@@ -19,10 +19,10 @@ const siteConfig = {
       '@docusaurus/preset-classic',
       {
         docs: {
-          path: '../docs',
+          path: './docs',
           sidebarPath: require.resolve('./sidebars.json'),
           editUrl:
-            'https://github.com/facebook/create-react-app/edit/main/docusaurus/website',
+            'https://github.com/facebook/create-substrate-app/edit/main/docusaurus/website',
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
         },
@@ -37,7 +37,7 @@ const siteConfig = {
     algolia: {
       appId: 'AUJYIQ70HN',
       apiKey: '25243dbf9049cf036e87f64b361bd2b9',
-      indexName: 'create-react-app',
+      indexName: 'create-substrate-app',
     },
     navbar: {
       title: 'Create Substrate App',
@@ -75,7 +75,7 @@ const siteConfig = {
           items: [
             {
               label: 'Stack Overflow',
-              href: 'https://substrate.stackexchange.com/questions/tagged/create-react-app',
+              href: 'https://substrate.stackexchange.com/questions/tagged/create-substrate-app',
             },
             {
               label: 'GitHub Discussions',
@@ -88,7 +88,7 @@ const siteConfig = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://www.github.com/facebook/create-react-app',
+              href: 'https://github.com/philoniare/create-substrate-app',
             },
           ],
         },
