@@ -80,7 +80,7 @@
     display: flex;
     justify-content: space-around;
     width: 100%;
-    max-width: 700px;
+    max-width: 1024px;
     margin-bottom: 3rem;
   }
 
@@ -93,9 +93,16 @@
   }
 
   .divider {
-    width: 1px;
+    width: 5px;
     background: var(--red-to-pink-to-purple-vertical-gradient);
     margin-inline: 0.5rem;
+  }
+
+  .connect-cta {
+    background: var(--electric-violet);
+    color: white;
+    padding: 10px;
+    border-radius: 20px;
   }
 
   .pill-group {
@@ -162,6 +169,11 @@
     fill: var(--gray-900);
   }
 
+  .left-side, .right-side {
+    flex-grow: 1;
+    width: 100%;
+  }
+
   @media screen and (max-width: 650px) {
     .content {
       flex-direction: column;
@@ -170,9 +182,10 @@
 
     .divider {
       height: 1px;
-      width: 100%;
+      width: 5px;
       background: var(--red-to-pink-to-purple-horizontal-gradient);
       margin-block: 1.5rem;
+      padding: 0 1px;
     }
   }
 </style>
@@ -231,7 +244,7 @@
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">
       <div class="pill-group">
-        <button *ngIf="!context?.isConnected" (click)="connectWallet()">
+        <button *ngIf="!context?.isConnected" (click)="connectWallet()" class="connect-cta">
           Connect Wallet
         </button>
         <div *ngIf="context?.isConnected">
