@@ -90,7 +90,7 @@ async function runCLI() {
         }
 
         // Create .env.local file
-        const envFilePath = path.join(destinationPath, '.env.local');
+        const envFilePath = path.join(destinationPath, '.env');
         const envContent = `REACT_APP_NAME=${projectName}\nREACT_APP_CHAIN=${chain}`;
         fs.writeFileSync(envFilePath, envContent);
 
