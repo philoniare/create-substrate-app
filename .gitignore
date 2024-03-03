@@ -4,3 +4,4 @@ yarn.lock
 **/.env
 **/package-lock.json
 .vercel
+.vscode
