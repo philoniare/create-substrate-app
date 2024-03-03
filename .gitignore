@@ -1,7 +1,7 @@
 node_modules
 .idea
 yarn.lock
-**/.env
+.env
 **/package-lock.json
 .vercel
 .vscode
