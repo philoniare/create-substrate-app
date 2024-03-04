@@ -3,7 +3,7 @@ import SubstrateContextType, { useSubstrate } from '@/substrate/useSubstrate'
 import { CHAIN_PROVIDERS } from '@/substrate/chains'
 
 const appName: string = import.meta.env.VITE_APP_NAME
-const providerUrl: string = CHAIN_PROVIDERS[import.meta.env.VITE_PROVIDER_URL]
+const providerUrl: string = CHAIN_PROVIDERS[import.meta.env.VITE_CHAIN]
 const substrate: SubstrateContextType = useSubstrate(providerUrl, appName)
 </script>
 

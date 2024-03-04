@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
 
 async function updateProjectName(destinationPath, projectName) {
     // Assuming destinationPath is the path to the newly created project directory
@@ -35,13 +36,16 @@ async function copyDirectory(source, destination) {
     }
 }
 
-async function executeCommand(command, cwd) {
-    const { exec } = require('child_process');
+async function executeCommand(command, args, cwd) {
     return new Promise((resolve, reject) => {
-        exec(command, { cwd }, (error, stdout, stderr) => {
-            if (error) reject(error);
-            if (stderr) console.error(stderr);
-            resolve(stdout);
+        const proc = spawn(command, args, { cwd, shell: true, stdio: 'inherit' });
+
+        proc.on('close', (code) => {
+            if (code === 0) {
+                resolve();
+            } else {
+                reject(new Error(`Command exited with code ${code}`));
+            }
         });
     });
 }
@@ -95,16 +99,18 @@ async function runCLI() {
         if(framework === 'angular') {
             // create environment.ts
             envFilePath = path.join(destinationPath, 'src', 'environments', 'environment.ts');
-            envContent = `export const environment = {\nappName: '${projectName}',\nchain: '${chain}'\n};`;
-        } else {
-            // react and vue use .env file
+            envContent = `export const environment = {\n    appName: '${projectName}',\n    chain: '${chain}'\n};`;
+        } else if(framework === 'vue') {
+            envFilePath = path.join(destinationPath, '.env');
+            envContent = `VITE_APP_NAME=${projectName}\nVITE_CHAIN=${chain}`;
+        } else if(framework === 'react') {
             envFilePath = path.join(destinationPath, '.env');
             envContent = `REACT_APP_NAME=${projectName}\nREACT_APP_CHAIN=${chain}`;
         }
         fs.writeFileSync(envFilePath, envContent);
 
         console.log('Installing packages. This might take a couple of minutes.');
-        await executeCommand('npm install', destinationPath);
+        await executeCommand('npm', ['install'], destinationPath);
     });
 
 }
