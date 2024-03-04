@@ -6,13 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["substrate", "react", "vue", "angular", "polkadot"],
+  "author": "philoniare",
   "license": "Apache-2.0",
   "dependencies": {
     "inquirer": "^9.2.15"
   },
   "bin": {
     "create-substrate-app": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/philoniare/create-substrate-app.git"
   }
 }

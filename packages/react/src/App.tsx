@@ -10,7 +10,16 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <button onClick={connectWallet}>Connect Wallet</button>
+        <button
+          onClick={connectWallet}
+          style={{
+            padding: "10px",
+            background: "#61dafb",
+            borderRadius: "15px",
+          }}
+        >
+          Connect Wallet
+        </button>
         {isConnected && (
           <div style={{ textAlign: "left" }}>
             <div>Address: {account?.address}</div>
