@@ -215,9 +215,9 @@ When you build the project, Create Substrate App will place the `public` folder 
 
 [Vercel](https://vercel.com/home) is a cloud platform that enables developers to host Jamstack websites and web services that deploy instantly, scale automatically, and requires no supervision, all with zero configuration. They provide a global edge network, SSL encryption, asset compression, cache invalidation, and more.
 
-### Step 1: Deploying your React project to Vercel
+### Step 1: Deploying your project to Vercel
 
-To deploy your React project with a [Vercel for Git Integration](https://vercel.com/docs/git-integrations), make sure it has been pushed to a Git repository.
+To deploy your project with a [Vercel for Git Integration](https://vercel.com/docs/git-integrations), make sure it has been pushed to a Git repository.
 
 Import the project into Vercel using the [Import Flow](https://vercel.com/import/git). During the import, you will find all relevant [options](https://vercel.com/docs/build-step#build-&-development-settings) preconfigured for you with the ability to change as needed.
 
@@ -233,10 +233,7 @@ To add your domain to your project, navigate to your [Project](https://vercel.co
 
 Once the domain has been added, you will be presented with different methods for configuring it.
 
-### Deploying a fresh React project
-
 ### Vercel References:
 
-- [Official Vercel Guide](https://vercel.com/guides/deploying-react-with-vercel-cra)
 - [Vercel Deployment Docs](https://vercel.com/docs)
 - [Vercel Custom Domain Docs](https://vercel.com/docs/custom-domains)
