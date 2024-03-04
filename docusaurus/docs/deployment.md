@@ -1,7 +1,7 @@
 ---
 id: deployment
-title: React Deployment
-sidebar_label: React Deployment
+title: Deployment
+sidebar_label: Deployment
 ---
 
 `npm run build` runs the command for specific build operation on respective framework starter.
