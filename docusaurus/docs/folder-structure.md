@@ -3,31 +3,9 @@ id: folder-structure
 title: Folder Structure
 ---
 
-After creation, your project should look like this:
-
-```
-my-app/
-  README.md
-  node_modules/
-  package.json
-  public/
-    index.html
-    favicon.ico
-  src/
-    App.css
-    App.js
-    App.test.js
-    index.css
-    index.js
-    logo.svg
-```
-
-For the project to build, **these files must exist with exact filenames**:
-
-- `public/index.html` is the page template;
-- `src/index.js` is the JavaScript entry point.
-
-You can delete or rename the other files.
+After creation, your project should look like the starter project on each respective framework. Substrate specific code
+can be found under the `substrate` folder. It contains logic to connect a wallet and queries the balance of the
+connected wallet on the chosen chain.
 
 You may create subdirectories inside `src`. For faster rebuilds, only files inside `src` are processed by webpack. You need to **put any JS and CSS files inside `src`**, otherwise webpack won’t see them.
 

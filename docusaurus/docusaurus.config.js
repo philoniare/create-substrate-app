@@ -13,7 +13,7 @@ const siteConfig = {
   baseUrl: '/',
   projectName: 'create-substrate-app',
   organizationName: 'philoniare',
-  favicon: 'img/favicon/favicon.ico',
+  favicon: 'img/favicon/favicon.svg',
   presets: [
     [
       '@docusaurus/preset-classic',
@@ -35,8 +35,8 @@ const siteConfig = {
   themeConfig: {
     image: 'img/logo-og.png',
     algolia: {
-      appId: 'AUJYIQ70HN',
-      apiKey: '25243dbf9049cf036e87f64b361bd2b9',
+      appId: '40DJPLPCGS',
+      apiKey: '73b5baefa88c4daae100624f628fb0cd',
       indexName: 'create-substrate-app',
     },
     navbar: {

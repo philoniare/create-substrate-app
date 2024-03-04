@@ -12,7 +12,7 @@ You can find different topics in the table of contents. On desktop, you should s
 
 ## Looking for Polkadot.js Docs?
 
-The documentation for React itself is located on a separate website: **[polkadot.js.org](https://polkadot.js.org/docs/)**.
+The documentation for Polkadot.js itself is located on a separate website: **[polkadot.js.org](https://polkadot.js.org/docs/)**.
 
 This website is only about Create Substrate App.
 
