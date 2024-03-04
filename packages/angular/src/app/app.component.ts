@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {SubstrateService, SubstrateContextType} from "./substrate.service";
+import {SubstrateService, SubstrateContextType} from "./substrate/substrate.service";
 import {NgIf} from "@angular/common";
+import {environment} from "../environments/environment";
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,8 @@ import {NgIf} from "@angular/common";
 export class AppComponent {
   title = 'Substrate Angular App';
   context: SubstrateContextType | null = null;
+  appName = environment.appName;
+  chain = environment.chain;
 
   constructor(private substrateService: SubstrateService) {}
 
@@ -23,6 +26,6 @@ export class AppComponent {
   }
 
   connectWallet(): void {
-    this.substrateService.connectToSubstrate();
+    this.substrateService.connectToSubstrate(this.appName, this.chain);
   }
 }

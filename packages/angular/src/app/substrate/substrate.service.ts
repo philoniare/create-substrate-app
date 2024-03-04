@@ -4,6 +4,7 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { web3Accounts, web3Enable } from '@polkadot/extension-dapp';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { formatBalance } from '@polkadot/util';
+import {CHAIN_PROVIDERS} from './chains';
 
 export interface SubstrateContextType {
   api: ApiPromise | null;
@@ -23,17 +24,13 @@ export class SubstrateService {
     balance: '',
   });
 
-  constructor() {
-  }
-
   getContext(): Observable<SubstrateContextType> {
     return this.context.asObservable();
   }
 
-  public async connectToSubstrate(): Promise<void> {
+  public async connectToSubstrate(appName: string, chain: string): Promise<void> {
     try {
-      const providerUrl = 'wss://1rpc.io/dot'; // Move to environment variable if needed
-      const appName = 'Angular Substrate App'; // Move to environment variable if needed
+      const providerUrl = CHAIN_PROVIDERS[chain];
       await web3Enable(appName);
 
       const accounts = await web3Accounts();

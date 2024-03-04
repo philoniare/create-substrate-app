@@ -90,8 +90,17 @@ async function runCLI() {
         }
 
         // Create .env.local file
-        const envFilePath = path.join(destinationPath, '.env');
-        const envContent = `REACT_APP_NAME=${projectName}\nREACT_APP_CHAIN=${chain}`;
+        let envFilePath;
+        let envContent;
+        if(framework === 'angular') {
+            // create environment.ts
+            envFilePath = path.join(destinationPath, 'src', 'environments', 'environment.ts');
+            envContent = `export const environment = {\nappName: '${projectName}',\nchain: '${chain}'\n};`;
+        } else {
+            // react and vue use .env file
+            envFilePath = path.join(destinationPath, '.env');
+            envContent = `REACT_APP_NAME=${projectName}\nREACT_APP_CHAIN=${chain}`;
+        }
         fs.writeFileSync(envFilePath, envContent);
 
         console.log('Installing packages. This might take a couple of minutes.');
