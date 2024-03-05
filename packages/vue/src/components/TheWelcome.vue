@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import SubstrateContextType, { useSubstrate } from '@/substrate/useSubstrate'
+import type SubstrateContextType from '@/substrate/useSubstrate'
+import { useSubstrate } from '@/substrate/useSubstrate';
 import { CHAIN_PROVIDERS } from '@/substrate/chains'
 
 const appName: string = import.meta.env.VITE_APP_NAME

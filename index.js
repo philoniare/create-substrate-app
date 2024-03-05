@@ -97,6 +97,8 @@ async function runCLI() {
         let envFilePath;
         let envContent;
         if(framework === 'angular') {
+            const environmentsDir = path.join(destinationPath, 'src', 'environments');
+            fs.mkdirSync(environmentsDir, { recursive: true });
             // create environment.ts
             envFilePath = path.join(destinationPath, 'src', 'environments', 'environment.ts');
             envContent = `export const environment = {\n    appName: '${projectName}',\n    chain: '${chain}'\n};`;
