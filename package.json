@@ -1,6 +1,6 @@
 {
   "name": "create-substrate-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Helper CLI Tool to get started with developing a DApp on Substrate based chains",
   "main": "index.js",
   "scripts": {
