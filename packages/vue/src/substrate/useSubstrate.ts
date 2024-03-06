@@ -1,8 +1,9 @@
 import { ref, onMounted, watch, reactive } from 'vue'
 import { ApiPromise, WsProvider } from '@polkadot/api'
-import { web3Accounts, web3Enable } from '@polkadot/extension-dapp'
+import { web3Accounts, web3Enable, web3FromSource } from '@polkadot/extension-dapp'
 import { formatBalance } from '@polkadot/util'
 import type { KeypairType } from '@polkadot/util-crypto/types'
+import type { HexString } from '@polkadot/util/types'
 
 interface InjectedAccountWithMeta {
   address: string
@@ -20,6 +21,7 @@ export default interface SubstrateContextType {
   account: InjectedAccountWithMeta | null
   isConnected: boolean
   balance: string
+  transfer: (recipientAddress: string | undefined, amount: string) => Promise<HexString>
 }
 
 export function useSubstrate(providerUrl: string, appName: string): SubstrateContextType {
@@ -59,6 +61,30 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
     }
   }
 
+  const transfer = async (recipientAddress: string, amount: string) => {
+    try {
+      const amountInSmallestDenom = parseFloat(amount)
+      if (api.value && account.value) {
+        if (!api.value.tx.balances?.transferKeepAlive) {
+          console.error('transferKeepAlive method not found. Please check API version.')
+          return
+        }
+        const transaction = api.value.tx.balances.transferKeepAlive(
+          recipientAddress,
+          amountInSmallestDenom
+        )
+
+        const injector = await web3FromSource(account.value.meta.source)
+        const hash = await transaction.signAndSend(account.value.address, {
+          signer: injector.signer
+        })
+        return hash.toHex()
+      }
+    } catch (error) {
+      console.error('Failed to make a transfer:', error)
+    }
+  }
+
   const connectToSubstrate = async () => {
     try {
       const provider = new WsProvider(providerUrl)
@@ -85,6 +111,7 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
     connectWallet,
     account,
     isConnected,
-    balance
+    balance,
+    transfer
   }) as SubstrateContextType
 }
