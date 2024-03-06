@@ -7,4 +7,5 @@ export const CHAIN_PROVIDERS: ChainProviders = {
   polkadot: "wss://1rpc.io/dot",
   kusama: "wss://1rpc.io/ksm",
   astar: "wss://1rpc.io/astr",
+  azero: "wss://ws.test.azero.dev"
 };

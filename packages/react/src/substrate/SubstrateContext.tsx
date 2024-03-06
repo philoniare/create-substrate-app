@@ -6,9 +6,14 @@ import React, {
   useState,
 } from "react";
 import { ApiPromise, WsProvider } from "@polkadot/api";
-import { web3AccountsSubscribe, web3Enable } from "@polkadot/extension-dapp";
+import {
+  web3AccountsSubscribe,
+  web3Enable,
+  web3FromSource,
+} from "@polkadot/extension-dapp";
 import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 import { formatBalance } from "@polkadot/util";
+import { HexString } from "@polkadot/util/types";
 
 // Define the shape of the context for Substrate integration
 interface SubstrateContextType {
@@ -17,6 +22,10 @@ interface SubstrateContextType {
   account: InjectedAccountWithMeta | null;
   isConnected: boolean;
   balance: string;
+  transfer: (
+    recipientAddress: string,
+    amount: string,
+  ) => Promise<HexString | undefined>;
 }
 
 interface SubstrateProviderProps {
@@ -57,6 +66,32 @@ const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
         "Failed to fetch accounts from Polkadot{.js} extension:",
         error,
       );
+    }
+  };
+
+  const transfer = async (recipientAddress: string, amount: string) => {
+    try {
+      const amountInSmallestDenom = parseFloat(amount);
+      if (api && account) {
+        if (!api.tx.balances?.transferKeepAlive) {
+          console.error(
+            "transferKeepAlive method not found. Please check API version.",
+          );
+          return;
+        }
+        const transaction = api.tx.balances.transferKeepAlive(
+          recipientAddress,
+          amountInSmallestDenom,
+        );
+
+        const injector = await web3FromSource(account.meta.source);
+        const hash = await transaction.signAndSend(account.address, {
+          signer: injector.signer,
+        });
+        return hash.toHex();
+      }
+    } catch (error) {
+      console.error("Failed to make a transfer:", error);
     }
   };
 
@@ -115,6 +150,7 @@ const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
     account,
     isConnected,
     balance,
+    transfer,
   };
 
   return (

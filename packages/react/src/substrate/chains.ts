@@ -1,5 +1,5 @@
 interface ChainProviders {
-    [key: string]: string;
+  [key: string]: string;
 }
 
 export const CHAIN_PROVIDERS: ChainProviders = {
