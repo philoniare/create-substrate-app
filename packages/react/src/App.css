@@ -40,14 +40,14 @@
 
 .balance-table td, th {
   padding: 10px;
-  border: 1px solid black;
+  border: 1px solid white;
 }
 
 .transfer-div {
   padding: 20px;
   border: 1px solid white;
   margin-top: 20px;
-  width: 656px;
+  width: 674px;
 }
 
 .transfer-input {
