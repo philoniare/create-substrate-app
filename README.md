@@ -2,7 +2,8 @@
 ***
 `create-substrate-app` is a command-line tool that simplifies the process of starting a new decentralized web app
 creation connected to a Substrate based chain. It allows developers to quickly bootstrap a new project with templates
-for React, Vue, and Angular, getting you started with Substrate DApp development in no time.
+for React, Vue, and Angular, getting you started with Substrate DApp development in no time. The basic interface allows
+you to query the on-chain balance and transfer funds between accounts.
 
 ## Prerequisites
 Before you begin, ensure you have the following installed on your system:
@@ -42,6 +43,22 @@ All of the templates are based on the starter templates provided by respective f
 
 No opinionated assumptions have been made regarding state management, allowing the user to freely choose their
 preferred tool.
+
+### Screenshots
+#### React
+![image](https://github.com/w3f/Grant-Milestone-Delivery/assets/13562152/11c04e1a-e504-4435-9d69-6146cc70ff2b)
+#### Angular
+![image](https://github.com/w3f/Grant-Milestone-Delivery/assets/13562152/65647f05-2421-4827-a169-d2be89e5380d)
+#### Vue
+![image](https://github.com/w3f/Grant-Milestone-Delivery/assets/13562152/0f6e2d76-2771-4663-afcb-70e3c3558008)
+
+
+### FAQ
+#### How do I set it up with a custom chain?
+Simple add the RPC endpoint in `substrate/chain.ts` and update the env chain variable in the `.env` file
+#### How do I handle multiple wallets?
+You can use the `injectedAccounts` array to add functionality to interact with multiple wallets.
+
 
 ## License
 `create-substrate-app` is open source software licensed as [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0)

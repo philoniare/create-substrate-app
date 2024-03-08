@@ -5,7 +5,7 @@ import { useSubstrate } from '@/substrate/useSubstrate'
 import { CHAIN_PROVIDERS } from '@/substrate/chains'
 
 const appName: string = import.meta.env.VITE_APP_NAME || 'my-app'
-const providerUrl: string = CHAIN_PROVIDERS[import.meta.env.VITE_CHAIN] || 'default'
+const providerUrl: string = CHAIN_PROVIDERS[import.meta.env.VITE_CHAIN || 'default']
 const substrate: SubstrateContextType = useSubstrate(providerUrl, appName)
 const toAddress = ref(substrate.account?.address)
 const amount = ref('')

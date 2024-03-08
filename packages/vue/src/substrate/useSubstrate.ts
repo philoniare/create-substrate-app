@@ -5,6 +5,9 @@ import { formatBalance } from '@polkadot/util'
 import type { KeypairType } from '@polkadot/util-crypto/types'
 import type { HexString } from '@polkadot/util/types'
 
+/**
+ * Represents an injected account with metadata.
+ */
 interface InjectedAccountWithMeta {
   address: string
   meta: {
@@ -15,21 +18,33 @@ interface InjectedAccountWithMeta {
   type?: KeypairType
 }
 
-export default interface SubstrateContextType {
+/**
+ * Defines the shape of the Substrate context.
+ */
+interface SubstrateContextValue {
   api: ApiPromise | null
   connectWallet: () => Promise<void>
   account: InjectedAccountWithMeta | null
   isConnected: boolean
   balance: string
-  transfer: (recipientAddress: string | undefined, amount: string) => Promise<HexString>
+  transfer: (recipientAddress: string | undefined, amount: string) => Promise<HexString | undefined>
 }
 
-export function useSubstrate(providerUrl: string, appName: string): SubstrateContextType {
+/**
+ * Composable function that provides the Substrate context.
+ * @param providerUrl The WebSocket URL of the Substrate node.
+ * @param appName The name of the application.
+ * @returns The Substrate context value.
+ */
+export function useSubstrate(providerUrl: string, appName: string): SubstrateContextValue {
   const api = ref<ApiPromise | null>(null)
   const account = ref<InjectedAccountWithMeta | null>(null)
   const isConnected = ref<boolean>(false)
   const balance = ref<string>('')
 
+  /**
+   * Connects to the Polkadot{.js} extension and retrieves the accounts.
+   */
   const connectWallet = async () => {
     try {
       await web3Enable(appName)
@@ -43,6 +58,9 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
     }
   }
 
+  /**
+   * Fetches the balance of the connected account.
+   */
   const fetchBalance = async () => {
     if (api.value && account.value) {
       try {
@@ -61,7 +79,13 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
     }
   }
 
-  const transfer = async (recipientAddress: string, amount: string) => {
+  /**
+   * Transfers funds from the connected account to the specified recipient address.
+   * @param recipientAddress The address of the recipient.
+   * @param amount The amount to transfer in the smallest denomination of the chain's native token.
+   * @returns The transaction hash if successful, undefined otherwise.
+   */
+  const transfer = async (recipientAddress: string, amount: string): Promise<HexString | undefined> => {
     try {
       const amountInSmallestDenom = parseFloat(amount)
       if (api.value && account.value) {
@@ -85,6 +109,9 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
     }
   }
 
+  /**
+   * Connects to the Substrate node using the provided WebSocket URL.
+   */
   const connectToSubstrate = async () => {
     try {
       const provider = new WsProvider(providerUrl)
@@ -113,5 +140,5 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
     isConnected,
     balance,
     transfer
-  }) as SubstrateContextType
+  }) as SubstrateContextValue
 }
