@@ -21,7 +21,7 @@ interface InjectedAccountWithMeta {
 /**
  * Defines the shape of the Substrate context.
  */
-interface SubstrateContextValue {
+export interface SubstrateContextValue {
   api: ApiPromise | null
   connectWallet: () => Promise<void>
   account: InjectedAccountWithMeta | null
@@ -85,7 +85,10 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
    * @param amount The amount to transfer in the smallest denomination of the chain's native token.
    * @returns The transaction hash if successful, undefined otherwise.
    */
-  const transfer = async (recipientAddress: string, amount: string): Promise<HexString | undefined> => {
+  const transfer = async (
+    recipientAddress: string,
+    amount: string
+  ): Promise<HexString | undefined> => {
     try {
       const amountInSmallestDenom = parseFloat(amount)
       if (api.value && account.value) {

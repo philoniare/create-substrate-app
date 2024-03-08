@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type SubstrateContextType from '@/substrate/useSubstrate'
+import type { SubstrateContextValue } from '@/substrate/useSubstrate'
 import { useSubstrate } from '@/substrate/useSubstrate'
 import { CHAIN_PROVIDERS } from '@/substrate/chains'
 
 const appName: string = import.meta.env.VITE_APP_NAME || 'my-app'
 const providerUrl: string = CHAIN_PROVIDERS[import.meta.env.VITE_CHAIN || 'default']
-const substrate: SubstrateContextType = useSubstrate(providerUrl, appName)
+const substrate: SubstrateContextValue = useSubstrate(providerUrl, appName)
 const toAddress = ref(substrate.account?.address)
 const amount = ref('')
 const tranHash = ref('')
