@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {
   SubstrateService,
-  SubstrateContextType,
+  SubstrateContextValue,
 } from './substrate/substrate.service';
 import { NgIf } from '@angular/common';
 import { environment } from '../environments/environment';
@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class AppComponent implements OnInit {
   title = 'Substrate Angular App';
-  context: SubstrateContextType | null = null;
+  context: SubstrateContextValue | null = null;
   appName = environment.appName || 'my-app';
   chain = environment.chain || 'default';
   toAddress: string = '';
