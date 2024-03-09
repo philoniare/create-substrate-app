@@ -46,11 +46,11 @@ preferred tool.
 
 ### Screenshots
 #### React
-![image](https://github.com/w3f/Grant-Milestone-Delivery/assets/13562152/11c04e1a-e504-4435-9d69-6146cc70ff2b)
+<img width="960" alt="image" src="https://github.com/philoniare/create-substrate-app/assets/13562152/c7b868b6-0e9a-4eec-96f7-99e21670f2bb">
 #### Angular
-![image](https://github.com/w3f/Grant-Milestone-Delivery/assets/13562152/65647f05-2421-4827-a169-d2be89e5380d)
+<img width="920" alt="image" src="https://github.com/philoniare/create-substrate-app/assets/13562152/d69e9f98-2d58-4c97-b717-3bbed89705fe">
 #### Vue
-![image](https://github.com/w3f/Grant-Milestone-Delivery/assets/13562152/0f6e2d76-2771-4663-afcb-70e3c3558008)
+<img width="1214" alt="image" src="https://github.com/philoniare/create-substrate-app/assets/13562152/6c1c9f96-555b-4b12-b8cd-e6fc42577ea8">
 
 
 ### FAQ
