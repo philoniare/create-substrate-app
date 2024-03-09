@@ -4,17 +4,16 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { SubstrateProvider } from "./substrate/SubstrateContext";
-import { CHAIN_PROVIDERS } from "./substrate/chains";
 
-const APP_NAME = process.env.REACT_APP_NAME || 'my-app';
-const CHAIN = process.env.REACT_APP_CHAIN || 'default';
+const APP_NAME = process.env.REACT_APP_NAME || "my-app";
+const CHAIN = process.env.REACT_APP_CHAIN || "default";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
 root.render(
   <React.StrictMode>
-    <SubstrateProvider providerUrl={CHAIN_PROVIDERS[CHAIN]} appName={APP_NAME}>
+    <SubstrateProvider chain={CHAIN} appName={APP_NAME}>
       <App />
     </SubstrateProvider>
   </React.StrictMode>,

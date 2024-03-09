@@ -1,42 +1,67 @@
 import React, { ChangeEvent, useState, useEffect } from "react";
 import { useWallet } from "./substrate/SubstrateContext";
 import { HexString } from "@polkadot/util/types";
-import logo from "./logo.svg";
+import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
+import { CHAIN_PROVIDERS } from "./substrate/chains";
 import "./App.css";
 
 function App() {
-  const { connectWallet, account, isConnected, balance, transfer } =
-    useWallet();
+  const {
+    connectWallet,
+    accounts,
+    isConnected,
+    fetchBalance,
+    transfer,
+    chain,
+  } = useWallet();
   const [toAddress, setToAddress] = useState<string>("");
   const [amount, setAmount] = useState("0");
   const [resultHash, setResultHash] = useState<HexString | undefined>(
     undefined,
   );
+  const [chosenAccount, setChoseAccount] =
+    useState<InjectedAccountWithMeta | null>(null);
+  const [balance, setBalance] = useState("");
+
+  useEffect(async () => {
+    const chainBalance = await fetchBalance(chosenAccount);
+    setBalance(chainBalance);
+  }, [chosenAccount]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const hash = await transfer(toAddress, amount);
-    setResultHash(hash);
+    if (chosenAccount) {
+      const hash = await transfer(toAddress, amount, chosenAccount);
+      setResultHash(hash);
+    }
   };
 
-  useEffect(() => {
-    if (account?.address) {
-      setToAddress(account?.address);
-    }
-  }, [account]);
+  const handleAccountUpdate = () => {};
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <img
+          src={CHAIN_PROVIDERS[chain].logo}
+          className="App-logo"
+          alt="logo"
+        />
         {!isConnected && (
           <button onClick={connectWallet} className={"submit-btn"}>
             Connect Wallet
           </button>
         )}
 
-        {isConnected && (
+        {isConnected && accounts && (
           <div style={{ textAlign: "left" }}>
+            <div>
+              Account:
+              <select id="account">
+                {accounts.map((account) => (
+                  <option>{account.address}</option>
+                ))}
+              </select>
+            </div>
             <table className={"balance-table"}>
               <thead>
                 <tr>
@@ -47,8 +72,8 @@ function App() {
               </thead>
               <tbody>
                 <tr>
-                  <td>{account?.meta?.name}</td>
-                  <td>{account?.address}</td>
+                  <td>{chosenAccount?.meta?.name}</td>
+                  <td>{chosenAccount?.address}</td>
                   <td>{balance}</td>
                 </tr>
               </tbody>

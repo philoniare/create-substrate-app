@@ -15,6 +15,7 @@ import {
 import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 import { formatBalance } from "@polkadot/util";
 import { HexString } from "@polkadot/util/types";
+import { CHAIN_PROVIDERS } from "./chains";
 
 /**
  * Defines the shape of the Substrate context.
@@ -22,10 +23,15 @@ import { HexString } from "@polkadot/util/types";
 interface SubstrateContextValue {
   api: ApiPromise | null;
   connectWallet: () => Promise<void>;
-  account: InjectedAccountWithMeta | null;
+  accounts: InjectedAccountWithMeta[] | null;
   isConnected: boolean;
-  balance: string;
-  transfer: (recipientAddress: string, amount: string) => Promise<HexString | undefined>;
+  fetchBalance: (account: InjectedAccountWithMeta) => Promise<string>;
+  transfer: (
+    recipientAddress: string,
+    amount: string,
+    account: InjectedAccountWithMeta,
+  ) => Promise<HexString | undefined>;
+  chain: string;
 }
 
 /**
@@ -33,27 +39,30 @@ interface SubstrateContextValue {
  */
 interface SubstrateProviderProps {
   children: ReactNode;
-  providerUrl: string;
+  chain: string;
   appName: string;
 }
 
 /**
  * Creates a context for Substrate API interaction.
  */
-export const SubstrateContext = createContext<SubstrateContextValue | null>(null);
+export const SubstrateContext = createContext<SubstrateContextValue | null>(
+  null,
+);
 
 /**
  * Provides the Substrate context to the application.
  */
 export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
-                                                                      children,
-                                                                      providerUrl,
-                                                                      appName,
-                                                                    }) => {
+  children,
+  chain,
+  appName,
+}) => {
   const [api, setApi] = useState<ApiPromise | null>(null);
-  const [account, setAccount] = useState<InjectedAccountWithMeta | null>(null);
+  const [accounts, setAccounts] = useState<InjectedAccountWithMeta[] | null>(
+    null,
+  );
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [balance, setBalance] = useState<string>("");
 
   /**
    * Connects to the Polkadot{.js} extension and subscribes to account changes.
@@ -61,14 +70,19 @@ export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
   const connectWallet = async () => {
     try {
       await web3Enable(appName);
-      await web3AccountsSubscribe((injectedAccounts: InjectedAccountWithMeta[]) => {
-        if (injectedAccounts.length > 0) {
-          setAccount(injectedAccounts[0]);
-          setIsConnected(true);
-        }
-      });
+      await web3AccountsSubscribe(
+        (injectedAccounts: InjectedAccountWithMeta[]) => {
+          if (injectedAccounts.length > 0) {
+            setAccounts(injectedAccounts);
+            setIsConnected(true);
+          }
+        },
+      );
     } catch (error) {
-      console.error("Failed to fetch accounts from Polkadot{.js} extension:", error);
+      console.error(
+        "Failed to fetch accounts from Polkadot{.js} extension:",
+        error,
+      );
     }
   };
 
@@ -76,14 +90,21 @@ export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
    * Transfers funds from the connected account to the specified recipient address.
    * @param recipientAddress The address of the recipient.
    * @param amount The amount to transfer in the smallest denomination of the chain's native token.
+   * @param account The account to transfer from.
    * @returns The transaction hash if successful, undefined otherwise.
    */
-  const transfer = async (recipientAddress: string, amount: string) => {
+  const transfer = async (
+    recipientAddress: string,
+    amount: string,
+    account: InjectedAccountWithMeta,
+  ) => {
     try {
       const amountInSmallestDenom = parseFloat(amount);
       if (api && account) {
         if (!api.tx.balances?.transferKeepAlive) {
-          console.error("transferKeepAlive method not found. Please check API version.");
+          console.error(
+            "transferKeepAlive method not found. Please check API version.",
+          );
           return;
         }
         const transaction = api.tx.balances.transferKeepAlive(
@@ -105,32 +126,32 @@ export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
   /**
    * Fetches the account balance whenever the API or account changes.
    */
-  useEffect(() => {
-    const fetchBalance = async () => {
-      if (api && account) {
-        try {
-          const chainInfo = await api.registry.getChainProperties();
-          if (chainInfo) {
-            const { address } = account;
-            const unsubscribe = await api.derive.balances.all(address, (result) => {
+  const fetchBalance = async (account: InjectedAccountWithMeta) => {
+    if (api && accounts) {
+      try {
+        const chainInfo = await api.registry.getChainProperties();
+        if (chainInfo) {
+          console.log("chainInfo", chainInfo.tokenSymbol.value[0].toString());
+          const { address } = account;
+          const unsubscribe = await api.derive.balances.all(
+            address,
+            (result) => {
               // Properly format the balance using chain's decimal and symbol information
               const formattedBalance = formatBalance(result.availableBalance, {
                 decimals: chainInfo.tokenDecimals.value[0].toNumber(),
                 withUnit: chainInfo.tokenSymbol.value[0].toString(),
               });
-              setBalance(formattedBalance);
-            });
+              return formattedBalance;
+            },
+          );
 
-            return () => unsubscribe();
-          }
-        } catch (error) {
-          console.error("Failed to fetch account balance:", error);
+          return () => unsubscribe();
         }
+      } catch (error) {
+        console.error("Failed to fetch account balance:", error);
       }
-    };
-
-    fetchBalance();
-  }, [api, account]);
+    }
+  };
 
   /**
    * Establishes a connection to the Substrate node via the provided WebSocket URL.
@@ -138,7 +159,7 @@ export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
   useEffect(() => {
     const connectToSubstrate = async () => {
       try {
-        const provider = new WsProvider(providerUrl);
+        const provider = new WsProvider(CHAIN_PROVIDERS[chain].rpc);
         const substrateApi = await ApiPromise.create({ provider });
         setApi(substrateApi);
       } catch (error) {
@@ -147,15 +168,16 @@ export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
     };
 
     connectToSubstrate();
-  }, [providerUrl]);
+  }, [chain]);
 
   const contextValue: SubstrateContextValue = {
     api,
     connectWallet,
-    account,
+    accounts,
     isConnected,
-    balance,
+    fetchBalance,
     transfer,
+    chain,
   };
 
   return (
