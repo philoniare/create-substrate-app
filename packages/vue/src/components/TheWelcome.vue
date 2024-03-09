@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import type { SubstrateContextValue } from '@/substrate/useSubstrate'
 import { useSubstrate } from '@/substrate/useSubstrate'
 import { CHAIN_PROVIDERS } from '@/substrate/chains'
 
 const appName: string = import.meta.env.VITE_APP_NAME || 'my-app'
-const providerUrl: string = CHAIN_PROVIDERS[import.meta.env.VITE_CHAIN || 'default']
+const providerUrl: string = CHAIN_PROVIDERS[import.meta.env.VITE_CHAIN || 'default'].rpc
 const substrate: SubstrateContextValue = useSubstrate(providerUrl, appName)
-const toAddress = ref(substrate.account?.address)
-const amount = ref('')
+const toAddress = ref('')
+const amount = ref('0')
 const tranHash = ref('')
 
 watch(
-  () => substrate.account?.address,
-  (newAddress) => {
-    toAddress.value = newAddress
-  }
+    () => substrate.selectedAddress,
+    (newAddress) => {
+      toAddress.value = newAddress
+    }
 )
 const handleSubmit = async () => {
   const hash = await substrate.transfer(toAddress.value, amount.value)
@@ -23,6 +23,10 @@ const handleSubmit = async () => {
     tranHash.value = hash
   }
 }
+
+const selectedAccount = computed(() => {
+  return substrate.accounts.find((account) => account.address === substrate.selectedAddress)
+})
 </script>
 
 <template>
@@ -36,6 +40,14 @@ const handleSubmit = async () => {
     </button>
     <div v-if="substrate.isConnected">
       <div>
+        <div>
+          <label for="account">Account:</label>
+          <select id="account" v-model="substrate.selectedAddress" style="margin-left: 10px">
+            <option v-for="account in substrate.accounts" :key="account.address" :value="account.address">
+              {{ account.address }}
+            </option>
+          </select>
+        </div>
         <table class="balance-table">
           <thead>
             <tr>
@@ -46,8 +58,8 @@ const handleSubmit = async () => {
           </thead>
           <tbody>
             <tr>
-              <td>{{ substrate.account?.meta?.name }}</td>
-              <td>{{ substrate.account?.address }}</td>
+              <td>{{ selectedAccount?.meta?.name }}</td>
+              <td>{{ selectedAccount?.address }}</td>
               <td>{{ substrate.balance }}</td>
             </tr>
           </tbody>

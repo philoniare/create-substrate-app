@@ -24,7 +24,8 @@ interface InjectedAccountWithMeta {
 export interface SubstrateContextValue {
   api: ApiPromise | null
   connectWallet: () => Promise<void>
-  account: InjectedAccountWithMeta | null
+  accounts: InjectedAccountWithMeta[]
+  selectedAddress: string
   isConnected: boolean
   balance: string
   transfer: (recipientAddress: string | undefined, amount: string) => Promise<HexString | undefined>
@@ -38,7 +39,8 @@ export interface SubstrateContextValue {
  */
 export function useSubstrate(providerUrl: string, appName: string): SubstrateContextValue {
   const api = ref<ApiPromise | null>(null)
-  const account = ref<InjectedAccountWithMeta | null>(null)
+  const accounts = ref<InjectedAccountWithMeta[]>([])
+  const selectedAddress = ref<string>('')
   const isConnected = ref<boolean>(false)
   const balance = ref<string>('')
 
@@ -50,7 +52,8 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
       await web3Enable(appName)
       const injectedAccounts = await web3Accounts()
       if (injectedAccounts.length > 0) {
-        account.value = injectedAccounts[0]
+        accounts.value = injectedAccounts
+        selectedAddress.value = injectedAccounts[0].address
         isConnected.value = true
       }
     } catch (error) {
@@ -62,10 +65,9 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
    * Fetches the balance of the connected account.
    */
   const fetchBalance = async () => {
-    if (api.value && account.value) {
+    if (api.value && selectedAddress.value) {
       try {
-        const { address } = account.value
-        const result = await api.value.derive.balances.all(address)
+        const result = await api.value.derive.balances.all(selectedAddress.value)
         const chainInfo = await api.value.registry.getChainProperties()
         if (chainInfo) {
           balance.value = formatBalance(result.availableBalance, {
@@ -91,7 +93,7 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
   ): Promise<HexString | undefined> => {
     try {
       const amountInSmallestDenom = parseFloat(amount)
-      if (api.value && account.value) {
+      if (api.value && selectedAddress.value) {
         if (!api.value.tx.balances?.transferKeepAlive) {
           console.error('transferKeepAlive method not found. Please check API version.')
           return
@@ -101,8 +103,13 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
           amountInSmallestDenom
         )
 
-        const injector = await web3FromSource(account.value.meta.source)
-        const hash = await transaction.signAndSend(account.value.address, {
+        const selectedAccount = accounts.value.find((account) => account.address === selectedAddress.value)
+        if (!selectedAccount) {
+          console.error('Selected account not found in the injected accounts')
+          return
+        }
+        const injector = await web3FromSource(selectedAccount.meta.source)
+        const hash = await transaction.signAndSend(selectedAddress.value, {
           signer: injector.signer
         })
         return hash.toHex()
@@ -129,7 +136,7 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
   })
 
   watch(
-    [api, account],
+    [api, selectedAddress],
     () => {
       fetchBalance()
     },
@@ -139,7 +146,8 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
   return reactive({
     api,
     connectWallet,
-    account,
+    accounts,
+    selectedAddress,
     isConnected,
     balance,
     transfer
