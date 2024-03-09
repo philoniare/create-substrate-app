@@ -1,11 +1,25 @@
 interface ChainProviders {
-  [key: string]: string;
+  [key: string]: {
+    rpc: string;
+    logo: string;
+  };
 }
 
 export const CHAIN_PROVIDERS: ChainProviders = {
-  default: "wss://1rpc.io/dot",
-  polkadot: "wss://1rpc.io/dot",
-  kusama: "wss://1rpc.io/ksm",
-  astar: "wss://1rpc.io/astr",
-  azero: "wss://ws.test.azero.dev"
+  default: {
+    rpc: "wss://1rpc.io/dot",
+    logo: "assets/substrate/polkadot.svg",
+  },
+  polkadot: {
+    rpc: "wss://1rpc.io/dot",
+    logo: "assets/substrate/polkadot.svg",
+  },
+  kusama: {
+    rpc: "wss://1rpc.io/ksm",
+    logo: "assets/substrate/kusama.svg",
+  },
+  astar: {
+    rpc: "wss://1rpc.io/astr",
+    logo: "assets/substrate/astar.svg",
+  },
 };

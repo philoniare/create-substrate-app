@@ -4,14 +4,16 @@ import {
   SubstrateService,
   SubstrateContextValue,
 } from './substrate/substrate.service';
-import { NgIf } from '@angular/common';
-import { environment } from '../environments/environment';
+import {NgForOf, NgIf} from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {InjectedAccountWithMeta} from "@polkadot/extension-inject/types";
+import {CHAIN_PROVIDERS} from "./substrate/chains";
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NgIf, FormsModule],
+  imports: [RouterOutlet, NgIf, FormsModule, NgForOf],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })
@@ -20,8 +22,9 @@ export class AppComponent implements OnInit {
   context: SubstrateContextValue | null = null;
   appName = environment.appName || 'my-app';
   chain = environment.chain || 'default';
+  selectedAccount: InjectedAccountWithMeta | null = null;
   toAddress: string = '';
-  amount: string = '';
+  amount: string = '0';
   tranHash: string = '';
 
   constructor(private substrateService: SubstrateService) {}
@@ -50,5 +53,15 @@ export class AppComponent implements OnInit {
     if (hash) {
       this.tranHash = hash;
     }
+  }
+
+  async onAccountChange(): Promise<void> {
+    if (this.selectedAccount) {
+      await this.substrateService.setSelectedAccount(this.selectedAccount);
+    }
+  }
+
+  getLogoPath(): string {
+    return CHAIN_PROVIDERS[this.chain]?.logo || '';
   }
 }

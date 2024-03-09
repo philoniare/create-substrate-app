@@ -12,7 +12,8 @@ import { CHAIN_PROVIDERS } from './chains';
  */
 export interface SubstrateContextValue {
   api: ApiPromise | null;
-  account: InjectedAccountWithMeta | null;
+  accounts: InjectedAccountWithMeta[];
+  selectedAccount: InjectedAccountWithMeta | null;
   isConnected: boolean;
   balance: string;
 }
@@ -26,7 +27,8 @@ export interface SubstrateContextValue {
 export class SubstrateService {
   private context = new BehaviorSubject<SubstrateContextValue>({
     api: null,
-    account: null,
+    accounts: [],
+    selectedAccount: null,
     isConnected: false,
     balance: '',
   });
@@ -46,7 +48,7 @@ export class SubstrateService {
    */
   public async connectToSubstrate(appName: string, chain: string): Promise<string | undefined> {
     try {
-      const providerUrl = CHAIN_PROVIDERS[chain];
+      const providerUrl = CHAIN_PROVIDERS[chain].rpc;
       await web3Enable(appName);
 
       const accounts = await web3Accounts();
@@ -54,7 +56,8 @@ export class SubstrateService {
         const provider = new WsProvider(providerUrl);
         const api = await ApiPromise.create({ provider });
         const address = accounts[0].address;
-        this.updateContext({ api, account: accounts[0], isConnected: true });
+        this.updateContext({ api, accounts: accounts, selectedAccount: accounts[0], isConnected: true });
+        this.setSelectedAccount(accounts[0]);
         this.fetchBalance(api, accounts[0]);
         return address;
       }
@@ -62,6 +65,18 @@ export class SubstrateService {
       console.error('Failed to connect:', error);
     }
     return undefined;
+  }
+
+  /**
+   * Updates the selected account
+   * @param account The InjectedAccountWithMeta of the selected account
+   */
+  public async setSelectedAccount(account: InjectedAccountWithMeta): Promise<void> {
+    const api = this.context.getValue().api;
+    if (api) {
+      this.updateContext({ selectedAccount: account });
+      this.fetchBalance(api, account);
+    }
   }
 
   /**
@@ -93,17 +108,17 @@ export class SubstrateService {
   public async transfer(recipientAddress: string, amount: string): Promise<HexString | undefined> {
     try {
       const amountInSmallestDenom = parseFloat(amount);
-      const account = this.context.getValue().account;
+      const selectedAccount = this.context.getValue().selectedAccount;
       const api = this.context.getValue().api;
-      if (api && account) {
+      if (api && selectedAccount) {
         if (!api.tx['balances']['transferKeepAlive']) {
           console.error('transferKeepAlive method not found. Please check API version.');
           return;
         }
         const transaction = api.tx['balances']['transferKeepAlive'](recipientAddress, amountInSmallestDenom);
 
-        const injector = await web3FromSource(account.meta.source);
-        const hash = await transaction.signAndSend(account.address, {
+        const injector = await web3FromSource(selectedAccount.meta.source);
+        const hash = await transaction.signAndSend(selectedAccount.address, {
           signer: injector.signer,
         });
         return hash.toHex();
