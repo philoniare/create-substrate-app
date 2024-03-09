@@ -47,8 +47,10 @@ preferred tool.
 ### Screenshots
 #### React
 <img width="960" alt="image" src="https://github.com/philoniare/create-substrate-app/assets/13562152/c7b868b6-0e9a-4eec-96f7-99e21670f2bb">
+
 #### Angular
 <img width="920" alt="image" src="https://github.com/philoniare/create-substrate-app/assets/13562152/d69e9f98-2d58-4c97-b717-3bbed89705fe">
+
 #### Vue
 <img width="1214" alt="image" src="https://github.com/philoniare/create-substrate-app/assets/13562152/6c1c9f96-555b-4b12-b8cd-e6fc42577ea8">
 
