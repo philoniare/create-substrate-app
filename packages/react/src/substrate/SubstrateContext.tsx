@@ -25,7 +25,7 @@ interface SubstrateContextValue {
   connectWallet: () => Promise<void>;
   accounts: InjectedAccountWithMeta[] | null;
   isConnected: boolean;
-  fetchBalance: (account: InjectedAccountWithMeta) => Promise<string>;
+  fetchBalance: (address: string) => Promise<string>;
   transfer: (
     recipientAddress: string,
     amount: string,
@@ -125,32 +125,34 @@ export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
 
   /**
    * Fetches the account balance whenever the API or account changes.
+   * @param address The address of the wallet to query the balance.
+   * @returns The formatted balance as a string.
    */
-  const fetchBalance = async (account: InjectedAccountWithMeta) => {
+  const fetchBalance = async (address: string): Promise<string> => {
     if (api && accounts) {
       try {
         const chainInfo = await api.registry.getChainProperties();
         if (chainInfo) {
-          console.log("chainInfo", chainInfo.tokenSymbol.value[0].toString());
-          const { address } = account;
-          const unsubscribe = await api.derive.balances.all(
-            address,
-            (result) => {
-              // Properly format the balance using chain's decimal and symbol information
-              const formattedBalance = formatBalance(result.availableBalance, {
-                decimals: chainInfo.tokenDecimals.value[0].toNumber(),
-                withUnit: chainInfo.tokenSymbol.value[0].toString(),
-              });
-              return formattedBalance;
-            },
-          );
-
-          return () => unsubscribe();
+          return new Promise((resolve, reject) => {
+            api.derive.balances.all(address, (result) => {
+              if (result) {
+                // Properly format the balance using chain's decimal and symbol information
+                const formattedBalance = formatBalance(result.availableBalance, {
+                  decimals: chainInfo.tokenDecimals.value[0].toNumber(),
+                  withUnit: chainInfo.tokenSymbol.value[0].toString(),
+                });
+                resolve(formattedBalance as string);
+              } else {
+                reject(new Error('Failed to fetch balance'));
+              }
+            });
+          });
         }
       } catch (error) {
         console.error("Failed to fetch account balance:", error);
       }
     }
+    return "";
   };
 
   /**

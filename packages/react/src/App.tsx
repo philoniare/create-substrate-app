@@ -19,14 +19,33 @@ function App() {
   const [resultHash, setResultHash] = useState<HexString | undefined>(
     undefined,
   );
-  const [chosenAccount, setChoseAccount] =
-    useState<InjectedAccountWithMeta | null>(null);
+  const [chosenAccount, setChosenAccount] = useState<InjectedAccountWithMeta | null>(null);
   const [balance, setBalance] = useState("");
 
-  useEffect(async () => {
-    const chainBalance = await fetchBalance(chosenAccount);
-    setBalance(chainBalance);
-  }, [chosenAccount]);
+  useEffect(() => {
+    const fetchInitialBalance = async () => {
+      if (accounts && accounts.length > 0) {
+        const firstAccount = accounts[0];
+        setChosenAccount(firstAccount);
+        const chainBalance = await fetchBalance(firstAccount.address);
+        setBalance(chainBalance);
+        setToAddress(firstAccount.address);
+      }
+    };
+
+    fetchInitialBalance();
+  }, [accounts, fetchBalance]);
+
+  useEffect(() => {
+    const fetchBalanceEffect = async () => {
+      if (chosenAccount) {
+        const chainBalance = await fetchBalance(chosenAccount.address);
+        setBalance(chainBalance);
+      }
+    };
+
+    fetchBalanceEffect();
+  }, [chosenAccount, fetchBalance]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +55,12 @@ function App() {
     }
   };
 
-  const handleAccountUpdate = () => {};
+  const handleAccountChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedAddress = event.target.value;
+    const selectedAccount = accounts?.find((account) => account.address === selectedAddress);
+    setChosenAccount(selectedAccount || null);
+    setToAddress(selectedAccount?.address || "");
+  };
 
   return (
     <div className="App">
@@ -56,9 +80,9 @@ function App() {
           <div style={{ textAlign: "left" }}>
             <div>
               Account:
-              <select id="account">
+              <select id="account" onChange={handleAccountChange} style={{marginLeft: '10px'}}>
                 {accounts.map((account) => (
-                  <option>{account.address}</option>
+                  <option key={account.address} value={account.address}>{account.address}</option>
                 ))}
               </select>
             </div>
