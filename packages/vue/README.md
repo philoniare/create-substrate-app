@@ -30,7 +30,7 @@ npm install
 ### Compile and Hot-Reload for Development
 
 ```sh
-npm run dev
+npm run start
 ```
 
 ### Type-Check, Compile and Minify for Production
@@ -42,7 +42,7 @@ npm run build
 ### Run Unit Tests with [Vitest](https://vitest.dev/)
 
 ```sh
-npm run test:unit
+npm run test
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
