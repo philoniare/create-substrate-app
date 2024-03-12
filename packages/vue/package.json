@@ -18,6 +18,7 @@
     "@polkadot/extension-dapp": "^0.46.7",
     "@polkadot/extension-inject": "^0.46.7",
     "@polkadot/util": "^12.6.2",
+    "@polkadot/util-crypto": "^12.6.2",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
   },

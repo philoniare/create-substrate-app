@@ -2,11 +2,11 @@
 import { ref, watch, computed } from 'vue'
 import type { SubstrateContextValue } from '@/substrate/useSubstrate'
 import { useSubstrate } from '@/substrate/useSubstrate'
-import { CHAIN_PROVIDERS } from '@/substrate/chains'
+import {CHAIN_PROVIDERS, type ChainProvider} from '@/substrate/chains'
 
 const appName: string = import.meta.env.VITE_APP_NAME || 'my-app'
-const providerUrl: string = CHAIN_PROVIDERS[import.meta.env.VITE_CHAIN || 'default'].rpc
-const substrate: SubstrateContextValue = useSubstrate(providerUrl, appName)
+const chainSpec: ChainProvider = CHAIN_PROVIDERS[import.meta.env.VITE_CHAIN || 'default']
+const substrate: SubstrateContextValue = useSubstrate(chainSpec, appName)
 const toAddress = ref('')
 const amount = ref('0')
 const tranHash = ref('')
@@ -14,7 +14,7 @@ const tranHash = ref('')
 watch(
     () => substrate.selectedAddress,
     (newAddress) => {
-      toAddress.value = newAddress
+      toAddress.value = substrate.formatAddressForChain(newAddress)
     }
 )
 const handleSubmit = async () => {
@@ -44,7 +44,7 @@ const selectedAccount = computed(() => {
           <label for="account">Account:</label>
           <select id="account" v-model="substrate.selectedAddress" style="margin-left: 10px">
             <option v-for="account in substrate.accounts" :key="account.address" :value="account.address">
-              {{ account.address }}
+              {{ substrate.formatAddressForChain(account.address) }}
             </option>
           </select>
         </div>
@@ -59,7 +59,7 @@ const selectedAccount = computed(() => {
           <tbody>
             <tr>
               <td>{{ selectedAccount?.meta?.name }}</td>
-              <td>{{ selectedAccount?.address }}</td>
+              <td>{{ substrate.formatAddressForChain(selectedAccount?.address) }}</td>
               <td>{{ substrate.balance }}</td>
             </tr>
           </tbody>

@@ -4,6 +4,8 @@ import { web3Accounts, web3Enable, web3FromSource } from '@polkadot/extension-da
 import { formatBalance } from '@polkadot/util'
 import type { KeypairType } from '@polkadot/util-crypto/types'
 import type { HexString } from '@polkadot/util/types'
+import type {ChainProvider} from "@/substrate/chains";
+import { encodeAddress } from "@polkadot/util-crypto";
 
 /**
  * Represents an injected account with metadata.
@@ -29,15 +31,16 @@ export interface SubstrateContextValue {
   isConnected: boolean
   balance: string
   transfer: (recipientAddress: string | undefined, amount: string) => Promise<HexString | undefined>
+  formatAddressForChain: (address: string | undefined) => string
 }
 
 /**
  * Composable function that provides the Substrate context.
- * @param providerUrl The WebSocket URL of the Substrate node.
+ * @param chainSpec The spec of the chain to be connected
  * @param appName The name of the application.
  * @returns The Substrate context value.
  */
-export function useSubstrate(providerUrl: string, appName: string): SubstrateContextValue {
+export function useSubstrate(chainSpec: ChainProvider, appName: string): SubstrateContextValue {
   const api = ref<ApiPromise | null>(null)
   const accounts = ref<InjectedAccountWithMeta[]>([])
   const selectedAddress = ref<string>('')
@@ -120,11 +123,20 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
   }
 
   /**
+   * Formats a generic address to the specific format used by the current chain.
+   * @param address The generic address to be formatted.
+   * @returns The formatted address compatible with the current chain.
+   */
+  const formatAddressForChain = (address: string | undefined) => {
+    return address ? encodeAddress(address, chainSpec.prefix) : '';
+  };
+
+  /**
    * Connects to the Substrate node using the provided WebSocket URL.
    */
   const connectToSubstrate = async () => {
     try {
-      const provider = new WsProvider(providerUrl)
+      const provider = new WsProvider(chainSpec.rpc)
       api.value = await ApiPromise.create({ provider })
     } catch (error) {
       console.error('Failed to connect to Substrate node:', error)
@@ -150,6 +162,7 @@ export function useSubstrate(providerUrl: string, appName: string): SubstrateCon
     selectedAddress,
     isConnected,
     balance,
-    transfer
+    transfer,
+    formatAddressForChain
   }) as SubstrateContextValue
 }
