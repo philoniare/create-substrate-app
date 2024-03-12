@@ -15,6 +15,7 @@ import {
 import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
 import { formatBalance } from "@polkadot/util";
 import { HexString } from "@polkadot/util/types";
+import { encodeAddress } from '@polkadot/util-crypto';
 import { CHAIN_PROVIDERS } from "./chains";
 
 /**
@@ -32,6 +33,7 @@ interface SubstrateContextValue {
     account: InjectedAccountWithMeta,
   ) => Promise<HexString | undefined>;
   chain: string;
+  formatAddressForChain: (address: string | undefined) => string;
 }
 
 /**
@@ -84,6 +86,15 @@ export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
         error,
       );
     }
+  };
+
+  /**
+   * Formats a generic address to the specific format used by the current chain.
+   * @param address The generic address to be formatted.
+   * @returns The formatted address compatible with the current chain.
+   */
+  const formatAddressForChain = (address: string | undefined) => {
+    return address ? encodeAddress(address, CHAIN_PROVIDERS[chain].prefix) : '';
   };
 
   /**
@@ -180,6 +191,7 @@ export const SubstrateProvider: React.FC<SubstrateProviderProps> = ({
     fetchBalance,
     transfer,
     chain,
+    formatAddressForChain,
   };
 
   return (

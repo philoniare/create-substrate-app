@@ -13,6 +13,7 @@ function App() {
     fetchBalance,
     transfer,
     chain,
+    formatAddressForChain,
   } = useWallet();
   const [toAddress, setToAddress] = useState<string>("");
   const [amount, setAmount] = useState("0");
@@ -29,12 +30,12 @@ function App() {
         setChosenAccount(firstAccount);
         const chainBalance = await fetchBalance(firstAccount.address);
         setBalance(chainBalance);
-        setToAddress(firstAccount.address);
+        setToAddress(formatAddressForChain(firstAccount.address));
       }
     };
 
     fetchInitialBalance();
-  }, [accounts, fetchBalance]);
+  }, [accounts, fetchBalance, formatAddressForChain]);
 
   useEffect(() => {
     const fetchBalanceEffect = async () => {
@@ -82,7 +83,7 @@ function App() {
               Account:
               <select id="account" onChange={handleAccountChange} style={{marginLeft: '10px'}}>
                 {accounts.map((account) => (
-                  <option key={account.address} value={account.address}>{account.address}</option>
+                  <option key={account.address} value={account.address}>{formatAddressForChain(account.address)}</option>
                 ))}
               </select>
             </div>
@@ -97,7 +98,7 @@ function App() {
               <tbody>
                 <tr>
                   <td>{chosenAccount?.meta?.name}</td>
-                  <td>{chosenAccount?.address}</td>
+                  <td>{formatAddressForChain(chosenAccount?.address)}</td>
                   <td>{balance}</td>
                 </tr>
               </tbody>

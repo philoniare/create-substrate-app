@@ -7,7 +7,7 @@
     "@polkadot/extension-dapp": "^0.46.7",
     "@polkadot/extension-inject": "^0.46.7",
     "@polkadot/util": "^12.6.2",
-
+    "@polkadot/util-crypto": "^12.6.2",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
