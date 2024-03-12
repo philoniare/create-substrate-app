@@ -6,8 +6,8 @@ import {
 } from './substrate/substrate.service';
 import {NgForOf, NgIf} from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {InjectedAccountWithMeta} from "@polkadot/extension-inject/types";
-import {CHAIN_PROVIDERS} from "./substrate/chains";
+import { InjectedAccountWithMeta } from "@polkadot/extension-inject/types";
+import { CHAIN_PROVIDERS } from "./substrate/chains";
 import { environment } from '../environments/environment';
 
 @Component({
@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   amount: string = '0';
   tranHash: string = '';
 
-  constructor(private substrateService: SubstrateService) {}
+  constructor(public substrateService: SubstrateService) {}
 
   ngOnInit(): void {
     this.substrateService.getContext().subscribe((context) => {
@@ -41,7 +41,7 @@ export class AppComponent implements OnInit {
       this.chain,
     );
     if (address) {
-      this.toAddress = address;
+      this.toAddress = this.substrateService.formatAddressForChain(address);
     }
   }
 
@@ -58,6 +58,7 @@ export class AppComponent implements OnInit {
   async onAccountChange(): Promise<void> {
     if (this.selectedAccount) {
       await this.substrateService.setSelectedAccount(this.selectedAccount);
+      this.toAddress = this.substrateService.formatAddressForChain(this.selectedAccount.address);
     }
   }
 

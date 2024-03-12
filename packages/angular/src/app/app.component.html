@@ -239,7 +239,7 @@
             <label for="account">Account:</label>
             <select id="account" [(ngModel)]="selectedAccount" (change)="onAccountChange()" style="margin-left: 10px">
               <option *ngFor="let account of context?.accounts" [ngValue]="account">
-                {{ account.address }}
+                {{ this.substrateService.formatAddressForChain(account.address) }}
               </option>
             </select>
           </div>
@@ -254,7 +254,7 @@
             <tbody>
             <tr>
               <td>{{ context?.selectedAccount?.meta?.name }}</td>
-              <td>{{ context?.selectedAccount?.address }}</td>
+              <td>{{ substrateService.formatAddressForChain(context?.selectedAccount?.address) }}</td>
               <td>{{ context?.balance }}</td>
             </tr>
             </tbody>

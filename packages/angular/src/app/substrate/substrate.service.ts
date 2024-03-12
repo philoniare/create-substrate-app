@@ -5,6 +5,7 @@ import { web3Accounts, web3Enable, web3FromSource } from '@polkadot/extension-da
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { formatBalance } from '@polkadot/util';
 import { HexString } from '@polkadot/util/types';
+import { encodeAddress } from '@polkadot/util-crypto';
 import { CHAIN_PROVIDERS } from './chains';
 
 /**
@@ -16,6 +17,7 @@ export interface SubstrateContextValue {
   selectedAccount: InjectedAccountWithMeta | null;
   isConnected: boolean;
   balance: string;
+  chain: string;
 }
 
 /**
@@ -31,6 +33,7 @@ export class SubstrateService {
     selectedAccount: null,
     isConnected: false,
     balance: '',
+    chain: 'default',
   });
 
   /**
@@ -39,6 +42,15 @@ export class SubstrateService {
   getContext(): Observable<SubstrateContextValue> {
     return this.context.asObservable();
   }
+
+  /**
+   * Formats a generic address to the specific format used by the current chain.
+   * @param address The generic address to be formatted.
+   * @returns The formatted address compatible with the current chain.
+   */
+  public formatAddressForChain = (address: string | undefined) => {
+    return address ? encodeAddress(address, CHAIN_PROVIDERS[this.context.getValue().chain].prefix) : '';
+  };
 
   /**
    * Connects to the Substrate blockchain using the specified app name and chain.
@@ -56,7 +68,7 @@ export class SubstrateService {
         const provider = new WsProvider(providerUrl);
         const api = await ApiPromise.create({ provider });
         const address = accounts[0].address;
-        this.updateContext({ api, accounts: accounts, selectedAccount: accounts[0], isConnected: true });
+        this.updateContext({ api, accounts: accounts, selectedAccount: accounts[0], isConnected: true, chain });
         this.setSelectedAccount(accounts[0]);
         this.fetchBalance(api, accounts[0]);
         return address;
